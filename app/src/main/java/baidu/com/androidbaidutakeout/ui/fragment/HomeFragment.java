@@ -11,11 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import baidu.com.androidbaidutakeout.R;
+import baidu.com.androidbaidutakeout.modle.net.Seller;
+import baidu.com.androidbaidutakeout.presenter.HomeFragmentPresenter;
 import baidu.com.androidbaidutakeout.ui.adapter.HomeRvAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,6 +41,7 @@ public class HomeFragment extends Fragment {
     LinearLayout mLlTitleContainer;
     Unbinder unbinder;
     private HomeRvAdapter mHomeRvAdapter;
+    private HomeFragmentPresenter mHomeFragmentPresenter;
 
     @Nullable
     @Override
@@ -46,6 +50,7 @@ public class HomeFragment extends Fragment {
         unbinder = ButterKnife.bind(this, homeView);
         mEvaluator = new ArgbEvaluator();
         //recyclerview的初始化(告诉用哪一种布局)
+        mHomeFragmentPresenter = new HomeFragmentPresenter(this);
         mRvHome.setLayoutManager(new LinearLayoutManager(getActivity()));
         mHomeRvAdapter = new HomeRvAdapter(getActivity());
         mRvHome.setAdapter(mHomeRvAdapter);
@@ -89,15 +94,24 @@ public class HomeFragment extends Fragment {
     private List<String> mDatas = new ArrayList<>();
 
     private void testData() {
-        for (int i = 0; i < 100; i++) {
+       /* for (int i = 0; i < 100; i++) {
             mDatas.add("我是条目:" + i);
         }
-        mHomeRvAdapter.setDatas(mDatas);
+        mHomeRvAdapter.setDatas(mDatas);*/
+        mHomeFragmentPresenter.loadHomeInfo();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    public void onSuccess(List<Seller> nearbySellers, List<Seller> otherSellers) {
+        mHomeRvAdapter.setNearbySellers(nearbySellers, otherSellers);
+    }
+
+    public void onFailed(String message) {
+        Toast.makeText(getActivity(), "对不起,网络繁忙", Toast.LENGTH_SHORT).show();
     }
 }
