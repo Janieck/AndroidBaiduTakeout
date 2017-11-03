@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import baidu.com.androidbaidutakeout.R;
+import baidu.com.androidbaidutakeout.presenter.LoginActivityPresenter;
+import baidu.com.androidbaidutakeout.utils.SMSUtil;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -39,12 +41,16 @@ public class LoginActivty extends AppCompatActivity {
     EditText mEtUserCode;
     @BindView(R.id.login)
     TextView mLogin;
+    private LoginActivityPresenter mLoginActivityPresenter;
+    private String mPhone;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+        mLoginActivityPresenter = new LoginActivityPresenter(this);
+
         //项目启动执行
         SMSSDK.initSDK(this, "221d7853e8060", "f94743b54c8f5aeda0f916dbed18c79d");
         //多少个App对应一个key mob 短信验证
@@ -73,6 +79,10 @@ public class LoginActivty extends AppCompatActivity {
                 //回调完成
                 if (event == SMSSDK.EVENT_SUBMIT_VERIFICATION_CODE) {
                     //提交验证码成功
+                    Log.e("sms", "提交验证码成功");
+                    //表明了身份,手机在我手里,我是本人,可以去服务器数据了
+                    //在使用账号密码登录服务器
+                    mLoginActivityPresenter.loginByPhone(mPhone, "1");
                 } else if (event == SMSSDK.EVENT_GET_VERIFICATION_CODE) {
                     //获取验证码成功
                     Log.e("sms", "获取短信验证码成功");
@@ -92,17 +102,23 @@ public class LoginActivty extends AppCompatActivity {
                 finish();
                 break;
             case R.id.tv_user_code:
-                String phone = mEtUserPhone.getText().toString().trim();
+                mPhone = mEtUserPhone.getText().toString().trim();
                 //获取验证码
-                SMSSDK.getVerificationCode("86", phone);
-                //同时开启倒计时
-                mTvUserCode.setEnabled(false);
-                new Thread(new CutDownTask()).start();
+                if (SMSUtil.judgePhoneNums(this, mPhone)) {
+                    SMSSDK.getVerificationCode("86", mPhone);
+                    //同时开启倒计时
+                    mTvUserCode.setEnabled(false);
+                    new Thread(new CutDownTask()).start();
+                }
+
                 break;
             case R.id.login:
-                String code = mEtUserCode.getText().toString().trim();
-                String phone2 = mEtUserPhone.getText().toString().trim();
-                SMSSDK.submitVerificationCode("86", phone2, code);
+                mPhone = mEtUserPhone.getText().toString().trim();
+              /*  if (SMSUtil.judgePhoneNums(this, mPhone)) {
+                    String code = mEtUserCode.getText().toString().trim();
+                    SMSSDK.submitVerificationCode("86", mPhone, code);
+                }*/
+                mLoginActivityPresenter.loginByPhone(mPhone, "1");
                 break;
         }
     }
@@ -124,6 +140,7 @@ public class LoginActivty extends AppCompatActivity {
     };
     int time = 60;
 
+
     private class CutDownTask implements Runnable {
         @Override
         public void run() {
@@ -134,5 +151,12 @@ public class LoginActivty extends AppCompatActivity {
             mHandler.sendEmptyMessage(TIME_IS_OUT);
             time = 60;
         }
+    }
+
+    public void onLoginSuccess() {
+        finish();
+    }
+
+    public void onLoginFailed() {
     }
 }

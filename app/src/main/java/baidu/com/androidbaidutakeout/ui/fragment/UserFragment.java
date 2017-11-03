@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import baidu.com.androidbaidutakeout.R;
 import baidu.com.androidbaidutakeout.ui.activity.LoginActivty;
+import baidu.com.androidbaidutakeout.utils.TakeoutApp;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -56,5 +57,25 @@ public class UserFragment extends Fragment {
     public void onViewClicked() {
         Intent intent = new Intent(getActivity(), LoginActivty.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        //如果是已经登录成功(id!=-1),显示欢迎界面
+        if (TakeoutApp.sUser.getId() != -1) {
+            //登录成功
+            mLogin.setVisibility(View.GONE);
+            mLlUserinfo.setVisibility(View.VISIBLE);
+            mUsername.setText("欢迎您," + TakeoutApp.sUser.getName());
+            mPhone.setText(TakeoutApp.sUser.getPhone());
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //登录成功,显示欢迎界面
+
     }
 }
