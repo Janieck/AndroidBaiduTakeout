@@ -23,3 +23,10 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+#凡事smsSdk的类,全部不混淆,类名保持不变,保证反射已经找到
+-keep class cn.smssdk.**{*;}
+-keep class com.mob.**{*;}
+
+-dontwarn com.mob.**
+-dontwarn cn.smssdk.**

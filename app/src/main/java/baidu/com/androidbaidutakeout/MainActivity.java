@@ -27,13 +27,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         initFragment();
         initBottom();
         changIndex(0);
-        getFragmentManager().beginTransaction().replace(R.id.main_fragment_container, mFragmentList.get(0)).commit();
+
     }
 
     private void initBottom() {
@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
                 setEnable(child, true);
             }
         }
+        getFragmentManager().beginTransaction().replace(R.id.main_fragment_container, mFragmentList.get(index)).commit();
     }
 
     private void setEnable(View child, boolean isEnable) {

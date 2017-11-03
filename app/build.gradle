@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
@@ -16,6 +15,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+}
+repositories{
+    flatDir{
+        dirs 'libs'
     }
 }
 
@@ -36,4 +40,8 @@ dependencies {
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+
+    compile files('libs/MobCommons-2016.0714.1402.jar')
+    compile files('libs/MobTools-2016.0714.1402.jar')
+    compile name: 'SMSSDK-2.1.1', ext: 'aar'
 }
